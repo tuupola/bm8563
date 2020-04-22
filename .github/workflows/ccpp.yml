@@ -1,4 +1,4 @@
-name: CI
+name: C/C++ CI
 
 on:
   push:
@@ -13,6 +13,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: make test
-      run: cd tests && make test
-
+    - name: make check
+      run: make check
