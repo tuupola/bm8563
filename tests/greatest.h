@@ -14,6 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/* SPDX-License-Identifier: ISC */
+
 #ifndef GREATEST_H
 #define GREATEST_H
 
