@@ -11,6 +11,9 @@ all: ${PROGRAMS}
 
 unit: unit.o mock_i2c.o ../bm8563.o
 
+test: unit
+	./unit
+
 %.o: %.c
 	${CC} -c -o $@ ${CFLAGS} $<
 
