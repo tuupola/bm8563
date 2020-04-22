@@ -83,7 +83,7 @@ TEST should_handle_century(void) {
     ASSERT(BM8563_ERROR_OK == bm8563_read(&bm, &datetime2));
 
     strftime(buffer, 128 ,"%c (day %j)" , &datetime2);
-    ASSERT_STR_EQ("Sun Dec 24 23:15:20 2006 (day 358))", &buffer);
+    ASSERT_STR_EQ("Sun Dec 24 23:15:20 2006 (day 358)", &buffer);
     PASS();
 }
 
