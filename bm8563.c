@@ -159,68 +159,64 @@ bm8563_err_t bm8563_write(const bm8563_t *bm, const struct tm *time)
 }
 
 
-bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
+bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
 {
     //uint8_t reg = command >> 8;
+    uint8_t buffer[BM8563_ALARM_SIZE] = {0};
     uint8_t tmp, status;
     struct tm *time;
 
     switch (command) {
     case BM8563_ALARM_SET:
-        time = (struct tm *)buffer;
+        time = (struct tm *)argument;
 
         /* 0..59 */
         if (BM8563_ALARM_NONE == time->tm_min) {
-            tmp = 0x00;
+            buffer[0] = 0x00;
         } else {
-            tmp = decimal2bcd(time->tm_min);
-            tmp |= BM8563_ALARM_ENABLE;
-        }
-        status = bm->write(bm->handle, BM8563_ADDRESS, BM8563_MINUTE_ALARM, &tmp, 1);
-        if (BM8563_OK != status) {
-            return status;
+            buffer[0] = decimal2bcd(time->tm_min);
+            buffer[0] |= BM8563_ALARM_ENABLE;
         }
 
         /* 0..23 */
         if (BM8563_ALARM_NONE == time->tm_hour) {
-            tmp = 0x00;
+            buffer[1] = 0x00;
         } else {
-            tmp = decimal2bcd(time->tm_hour);
-            tmp &= 0b00111111;
-            tmp |= BM8563_ALARM_ENABLE;
-        }
-        status = bm->write(bm->handle, BM8563_ADDRESS, BM8563_HOUR_ALARM, &tmp, 1);
-        if (BM8563_OK != status) {
-            return status;
+            buffer[1] = decimal2bcd(time->tm_hour);
+            buffer[1] &= 0b00111111;
+            buffer[1] |= BM8563_ALARM_ENABLE;
         }
 
         /* 1..31 */
         if (BM8563_ALARM_NONE == time->tm_mday) {
-            tmp = 0x00;
+            buffer[2] = 0x00;
         } else {
-            tmp = decimal2bcd(time->tm_mday);
-            tmp &= 0b00111111;
-            tmp |= BM8563_ALARM_ENABLE;
-        }
-        status = bm->write(bm->handle, BM8563_ADDRESS, BM8563_DAY_ALARM, &tmp, 1);
-        if (BM8563_OK != status) {
-            return status;
+            buffer[2] = decimal2bcd(time->tm_mday);
+            buffer[2] &= 0b00111111;
+            buffer[2] |= BM8563_ALARM_ENABLE;
         }
 
         /* 0..6 */
         if (BM8563_ALARM_NONE == time->tm_mday) {
-            tmp = 0x00;
+            buffer[3] = 0x00;
         } else {
-            tmp = decimal2bcd(time->tm_wday);
-            tmp &= 0b00000111;
-            tmp |= BM8563_ALARM_ENABLE;
+            buffer[3] = decimal2bcd(time->tm_wday);
+            buffer[3] &= 0b00000111;
+            buffer[3] |= BM8563_ALARM_ENABLE;
         }
-        return bm->write(bm->handle, BM8563_ADDRESS, BM8563_WEEKDAY_ALARM, &tmp, 1);
+
+        return bm->write(
+            bm->handle,
+            BM8563_ADDRESS,
+            BM8563_MINUTE_ALARM,
+            buffer,
+            BM8563_ALARM_SIZE
+        );
 
         break;
 
     case BM8563_ALARM_READ:
-        time = (struct tm *)buffer;
+        time = (struct tm *)argument;
 
         /* 0..59 */
         status = bm->read(bm->handle, BM8563_ADDRESS, BM8563_MINUTE_ALARM, &tmp, 1);
