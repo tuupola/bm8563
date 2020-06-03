@@ -161,7 +161,7 @@ bm8563_err_t bm8563_write(const bm8563_t *bm, const struct tm *time)
 
 bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
 {
-    //uint8_t reg = command >> 8;
+    uint8_t reg = command >> 8;
     uint8_t buffer[BM8563_ALARM_SIZE] = {0};
     uint8_t status;
     struct tm *time;
@@ -206,11 +206,7 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
         }
 
         return bm->write(
-            bm->handle,
-            BM8563_ADDRESS,
-            BM8563_MINUTE_ALARM,
-            buffer,
-            BM8563_ALARM_SIZE
+            bm->handle, BM8563_ADDRESS, reg, buffer, BM8563_ALARM_SIZE
         );
 
         break;
@@ -220,11 +216,7 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
 
         /* 0..59 */
         status = bm->read(
-            bm->handle,
-            BM8563_ADDRESS,
-            BM8563_MINUTE_ALARM,
-            buffer,
-            BM8563_ALARM_SIZE
+            bm->handle, BM8563_ADDRESS, reg, buffer, BM8563_ALARM_SIZE
         );
 
         if (BM8563_OK != status) {
