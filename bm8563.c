@@ -256,6 +256,13 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
 
         return BM8563_OK;
         break;
+
+    case BM8563_CONTROL_STATUS2_READ:
+        return bm->read(
+            bm->handle, BM8563_ADDRESS, reg, (uint8_t *)argument, 1
+        );
+        break;
+
     }
 
     return BM8563_ERROR_NOTTY;
