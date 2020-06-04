@@ -264,6 +264,7 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
         );
         break;
 
+    case BM8563_CONTROL_STATUS1_WRITE:
     case BM8563_CONTROL_STATUS2_WRITE:
         return bm->write(
             bm->handle, BM8563_ADDRESS, reg, (uint8_t *)argument, 1
