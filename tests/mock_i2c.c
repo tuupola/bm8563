@@ -31,7 +31,6 @@ SPDX-License-Identifier: MIT
 
 */
 
-#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 
