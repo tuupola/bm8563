@@ -76,6 +76,7 @@ extern "C" {
 #define BM8563_ALARM_READ       (0x0901)
 #define BM8563_CONTROL_STATUS1_READ     (0x0000)
 #define BM8563_CONTROL_STATUS2_READ     (0x0100)
+#define BM8563_CONTROL_STATUS2_WRITE    (0x0101)
 
 /* Status codes. */
 #define BM8563_ERROR_NOTTY      (-1)
