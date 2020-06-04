@@ -99,7 +99,11 @@ bm8563_ioctl(&bm, BM8563_ALARM_SET, &rtc_alarm);
 bm8563_ioctl(&bm, BM8563_CONTROL_STATUS2_READ, &tmp);
 if (tmp & BM8563_AF) {
     printf("Got alarm!");
-}
+};
+
+/* And clear the alarm flag. */
+tmp &= ~BM8563_AF;
+bm8563_ioctl(&bm, BM8563_CONTROL_STATUS2_WRITE, &tmp);
 ```
 
 ## Read currently set RTC alarm
