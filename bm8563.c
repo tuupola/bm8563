@@ -51,7 +51,7 @@ bm8563_err_t bm8563_init(const bm8563_t *bm)
     uint8_t clear = 0x00;
     int32_t status;
 
-    status = bm->write(bm->handle, BM8563_ADDRESS, BM8563_CONTROL_STATUS_1, &clear, 1);
+    status = bm->write(bm->handle, BM8563_ADDRESS, BM8563_CONTROL_STATUS1, &clear, 1);
     if (BM8563_OK != status) {
         return status;
     }
@@ -257,6 +257,7 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
         return BM8563_OK;
         break;
 
+    case BM8563_CONTROL_STATUS1_READ:
     case BM8563_CONTROL_STATUS2_READ:
         return bm->read(
             bm->handle, BM8563_ADDRESS, reg, (uint8_t *)argument, 1

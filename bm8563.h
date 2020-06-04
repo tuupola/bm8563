@@ -42,7 +42,7 @@ extern "C" {
 #include <time.h>
 
 #define	BM8563_ADDRESS	        (0x51)
-#define	BM8563_CONTROL_STATUS_1 (0x00)
+#define	BM8563_CONTROL_STATUS1  (0x00)
 #define	BM8563_TESTC            (0b00001000)
 #define	BM8563_STOP             (0b00100000)
 #define	BM8563_TEST1            (0b10000000)
@@ -74,6 +74,7 @@ extern "C" {
 /* IOCTL commands */
 #define BM8563_ALARM_SET        (0x0900)
 #define BM8563_ALARM_READ       (0x0901)
+#define BM8563_CONTROL_STATUS1_READ     (0x0000)
 #define BM8563_CONTROL_STATUS2_READ     (0x0100)
 
 /* Status codes. */
