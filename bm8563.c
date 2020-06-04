@@ -223,35 +223,35 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
             return status;
         }
 
-        if (BM8563_ALARM_ENABLE & buffer[0]) {
+        if (BM8563_ALARM_DISABLE & buffer[0]) {
+            time->tm_min = BM8563_ALARM_NONE;
+        } else {
             buffer[0] &= 0b01111111;
             time->tm_min = bcd2decimal(buffer[0]);
-        } else {
-            time->tm_min = BM8563_ALARM_NONE;
         }
 
         /* 0..23 */
-        if (BM8563_ALARM_ENABLE & buffer[1]) {
+        if (BM8563_ALARM_DISABLE & buffer[1]) {
+            time->tm_hour = BM8563_ALARM_NONE;
+        } else {
             buffer[1] &= 0b00111111;
             time->tm_hour = bcd2decimal(buffer[1]);
-        } else {
-            time->tm_hour = BM8563_ALARM_NONE;
         }
 
         /* 1..31 */
-        if (BM8563_ALARM_ENABLE & buffer[2]) {
+        if (BM8563_ALARM_DISABLE & buffer[2]) {
+            time->tm_mday = BM8563_ALARM_NONE;
+        } else {
             buffer[2] &= 0b00111111;
             time->tm_mday = bcd2decimal(buffer[2]);
-        } else {
-            time->tm_mday = BM8563_ALARM_NONE;
         }
 
         /* 0..6 */
-        if (BM8563_ALARM_ENABLE & buffer[3]) {
+        if (BM8563_ALARM_DISABLE & buffer[3]) {
+            time->tm_wday = BM8563_ALARM_NONE;
+        } else {
             buffer[3] &= 0b00000111;
             time->tm_wday = bcd2decimal(buffer[3]);
-        } else {
-            time->tm_wday = BM8563_ALARM_NONE;
         }
 
         return BM8563_OK;
