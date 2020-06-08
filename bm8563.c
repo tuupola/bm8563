@@ -158,8 +158,7 @@ bm8563_err_t bm8563_write(const bm8563_t *bm, const struct tm *time)
     return bm->write(bm->handle, BM8563_ADDRESS, BM8563_SECONDS, data, BM8563_TIME_SIZE);
 }
 
-
-bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
+bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
 {
     uint8_t reg = command >> 8;
     uint8_t data[BM8563_ALARM_SIZE] = {0};
@@ -168,7 +167,7 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
 
     switch (command) {
     case BM8563_ALARM_SET:
-        time = (struct tm *)argument;
+        time = (struct tm *)buffer;
 
         /* 0..59 */
         if (BM8563_ALARM_NONE == time->tm_min) {
@@ -212,7 +211,7 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
         break;
 
     case BM8563_ALARM_READ:
-        time = (struct tm *)argument;
+        time = (struct tm *)buffer;
 
         /* 0..59 */
         status = bm->read(
@@ -260,14 +259,14 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *argument)
     case BM8563_CONTROL_STATUS1_READ:
     case BM8563_CONTROL_STATUS2_READ:
         return bm->read(
-            bm->handle, BM8563_ADDRESS, reg, (uint8_t *)argument, 1
+            bm->handle, BM8563_ADDRESS, reg, (uint8_t *)buffer, 1
         );
         break;
 
     case BM8563_CONTROL_STATUS1_WRITE:
     case BM8563_CONTROL_STATUS2_WRITE:
         return bm->write(
-            bm->handle, BM8563_ADDRESS, reg, (uint8_t *)argument, 1
+            bm->handle, BM8563_ADDRESS, reg, (uint8_t *)buffer, 1
         );
         break;
 
