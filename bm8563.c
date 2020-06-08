@@ -174,7 +174,6 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
             data[0] = BM8563_ALARM_DISABLE;
         } else {
             data[0] = decimal2bcd(time->tm_min);
-            data[0] |= BM8563_ALARM_ENABLE;
         }
 
         /* 0..23 */
@@ -183,7 +182,6 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
         } else {
             data[1] = decimal2bcd(time->tm_hour);
             data[1] &= 0b00111111;
-            data[1] |= BM8563_ALARM_ENABLE;
         }
 
         /* 1..31 */
@@ -192,7 +190,6 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
         } else {
             data[2] = decimal2bcd(time->tm_mday);
             data[2] &= 0b00111111;
-            data[2] |= BM8563_ALARM_ENABLE;
         }
 
         /* 0..6 */
@@ -201,7 +198,6 @@ bm8563_err_t bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
         } else {
             data[3] = decimal2bcd(time->tm_wday);
             data[3] &= 0b00000111;
-            data[3] |= BM8563_ALARM_ENABLE;
         }
 
         return bm->write(
