@@ -36,12 +36,12 @@ SPDX-License-Identifier: MIT
 
 #include "bm8563.h"
 
-static uint8_t decimal2bcd (uint8_t decimal)
+static inline uint8_t decimal2bcd (uint8_t decimal)
 {
     return (((decimal / 10) << 4) | (decimal % 10));
 }
 
-static uint8_t bcd2decimal(uint8_t bcd)
+static inline uint8_t bcd2decimal(uint8_t bcd)
 {
    return (((bcd >> 4) * 10) + (bcd & 0x0f));
 }
