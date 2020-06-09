@@ -146,7 +146,7 @@ count = 10;
 control = BM8563_TIMER_ENABLE | BM8563_TIMER_1HZ;
 
 bm8563_ioctl(&bm, BM8563_TIMER_WRITE, &count);
-bm8563_ioctl(&bm, BM8563_TIMER_CONTROL_WRITE, &register);
+bm8563_ioctl(&bm, BM8563_TIMER_CONTROL_WRITE, &control);
 
 /* Prints "Timer!" every 10 seconds. */
 while (1) {
