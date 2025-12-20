@@ -237,12 +237,37 @@ should_read_and_write_alarm(void)
 
     datetime.tm_min = 30;
     datetime.tm_hour = 21;
+    datetime.tm_mday = 15;
+    datetime.tm_wday = 3;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_SET, &datetime));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime2));
+    ASSERT_EQ(datetime.tm_min, datetime2.tm_min);
+    ASSERT_EQ(datetime.tm_hour, datetime2.tm_hour);
+    ASSERT_EQ(datetime.tm_mday, datetime2.tm_mday);
+    ASSERT_EQ(datetime.tm_wday, datetime2.tm_wday);
+
+    PASS();
+}
+
+TEST
+should_read_and_write_alarm_all_none(void)
+{
+    struct tm datetime = {0};
+    struct tm datetime2 = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    datetime.tm_min = BM8563_ALARM_NONE;
+    datetime.tm_hour = BM8563_ALARM_NONE;
     datetime.tm_mday = BM8563_ALARM_NONE;
     datetime.tm_wday = BM8563_ALARM_NONE;
 
     ASSERT(BM8563_OK == bm8563_init(&bm));
     ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_SET, &datetime));
-    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime2));
+    ASSERT(BM8563_OK ==bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime2));
     ASSERT_EQ(datetime.tm_min, datetime2.tm_min);
     ASSERT_EQ(datetime.tm_hour, datetime2.tm_hour);
     ASSERT_EQ(datetime.tm_mday, datetime2.tm_mday);
