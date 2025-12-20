@@ -276,6 +276,20 @@ should_read_and_write_timer(void)
     PASS();
 }
 
+TEST
+should_return_error_for_invalid_ioctl(void)
+{
+    uint8_t dummy;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_ERROR_NOTTY == bm8563_ioctl(&bm, 0x9999, &dummy));
+
+    PASS();
+}
+
 GREATEST_MAIN_DEFS();
 
 int
@@ -294,6 +308,6 @@ main(int argc, char **argv)
     RUN_TEST(should_handle_year_2099);
     RUN_TEST(should_read_and_write_alarm);
     RUN_TEST(should_read_and_write_timer);
-
+    RUN_TEST(should_return_error_for_invalid_ioctl);
     GREATEST_MAIN_END();
 }
