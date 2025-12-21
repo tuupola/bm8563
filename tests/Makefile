@@ -1,8 +1,8 @@
-#CFLAGS += -Wall -Wextra -pedantic -Werror
-#CFLAGS += -Wall -Wextra -pedantic
-CFLAGS += -Wmissing-declarations -g
+#CFLAGS += -pedantic
+CFLAGS += -Wall -Wextra -Werror
 CFLAGS += -Wmissing-prototypes
 CFLAGS += -Wstrict-prototypes
+CFLAGS += -g
 CFLAGS += -I..
 
 PROGRAMS = unit

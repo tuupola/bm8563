@@ -284,5 +284,6 @@ bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
 bm8563_err_t
 bm8563_close(const bm8563_t *bm)
 {
+    (void) bm;
     return BM8563_OK;
 }

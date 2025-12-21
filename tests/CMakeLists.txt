@@ -1,7 +1,10 @@
 add_executable(unit unit.c mock_i2c.c)
 target_link_libraries(unit PRIVATE bm8563)
 target_compile_options(unit PRIVATE
-    -Wmissing-declarations
+    -g
+    -Wall
+    -Wextra
+    -Werror
     -Wmissing-prototypes
     -Wstrict-prototypes
 )
