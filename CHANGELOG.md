@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## [0.5.0](https://github.com/tuupola/bm8563/compare/0.4.0...master) - unreleased
+## [0.5.0](https://github.com/tuupola/bm8563/compare/0.4.0...0.5.0) - 2025-12-21
 
 ### Fixed
 - Cmake when not using ESP-IDF ([#11](https://github.com/tuupola/bm8563/pull/11))
