@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## [0.5.0](https://github.com/tuupola/bm8563/compare/0.4.0...master) - unreleased
 
+### Fixed
+- Cmake when not using ESP-IDF ([#11](https://github.com/tuupola/bm8563/pull/11))
+
 ### Added
 - Support for reading and writing timers ([#8](https://github.com/tuupola/bm8563/pull/8)).
 - Support for reading and writing control status registers ([#5](https://github.com/tuupola/bm8563/pull/5)).
