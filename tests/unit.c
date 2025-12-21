@@ -431,6 +431,34 @@ should_read_and_write_control_status2(void)
     PASS();
 }
 
+TEST
+bug_14_should_set_alarm_weekday(void)
+{
+    struct tm datetime = {0};
+    struct tm datetime2 = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    /* Set weekday alarm enabled but mday alarm disabled. */
+    /* This tests that weekday uses tm_wday, not tm_mday. */
+    datetime.tm_min = BM8563_ALARM_NONE;
+    datetime.tm_hour = BM8563_ALARM_NONE;
+    datetime.tm_mday = BM8563_ALARM_NONE;
+    datetime.tm_wday = 3;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_SET, &datetime));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime2));
+
+    /* Weekday should be 3, not disabled. */
+    ASSERT_EQ(datetime.tm_wday, datetime2.tm_wday);
+    /* mday should be disabled (ALARM_NONE). */
+    ASSERT_EQ(BM8563_ALARM_NONE, datetime2.tm_mday);
+
+    PASS();
+}
+
 GREATEST_MAIN_DEFS();
 
 int
@@ -459,5 +487,6 @@ main(int argc, char **argv)
     RUN_TEST(should_fail_write_time);
     RUN_TEST(should_read_and_write_control_status1);
     RUN_TEST(should_read_and_write_control_status2);
+    RUN_TEST(bug_14_should_set_alarm_weekday);
     GREATEST_MAIN_END();
 }

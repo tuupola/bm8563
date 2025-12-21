@@ -199,7 +199,7 @@ bm8563_ioctl(const bm8563_t *bm, int16_t command, void *buffer)
             }
 
             /* 0..6 */
-            if (BM8563_ALARM_NONE == time->tm_mday) {
+            if (BM8563_ALARM_NONE == time->tm_wday) {
                 data[3] = BM8563_ALARM_DISABLE;
             } else {
                 data[3] = decimal2bcd(time->tm_wday);

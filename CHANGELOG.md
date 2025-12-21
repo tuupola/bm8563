@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 - Cmake when not using ESP-IDF ([#11](https://github.com/tuupola/bm8563/pull/11))
+- BM8563_ALARM_SET confused mday and wday ([#14](https://github.com/tuupola/bm8563/issues/14), [#15](https://github.com/tuupola/bm8563/pull/15))
 
 ### Added
 - Support for reading and writing timers ([#8](https://github.com/tuupola/bm8563/pull/8)).
