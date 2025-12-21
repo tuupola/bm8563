@@ -13,4 +13,11 @@ else()
     add_library(bm8563 bm8563.c)
     target_include_directories(bm8563 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+    # Tests (off by default)
+    option(BM8563_BUILD_TESTS "Build tests" OFF)
+    if (BM8563_BUILD_TESTS)
+        enable_testing()
+        add_subdirectory(tests)
+    endif()
+
 endif()
