@@ -267,11 +267,25 @@ should_read_and_write_alarm_all_none(void)
 
     ASSERT(BM8563_OK == bm8563_init(&bm));
     ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_SET, &datetime));
-    ASSERT(BM8563_OK ==bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime2));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime2));
     ASSERT_EQ(datetime.tm_min, datetime2.tm_min);
     ASSERT_EQ(datetime.tm_hour, datetime2.tm_hour);
     ASSERT_EQ(datetime.tm_mday, datetime2.tm_mday);
     ASSERT_EQ(datetime.tm_wday, datetime2.tm_wday);
+
+    PASS();
+}
+
+TEST
+should_fail_alarm_read(void)
+{
+    struct tm datetime = {0};
+    bm8563_t bm;
+    bm.read = &mock_failing_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT_FALSE(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime));
 
     PASS();
 }
@@ -346,6 +360,7 @@ main(int argc, char **argv)
     RUN_TEST(should_handle_year_2099);
     RUN_TEST(should_read_and_write_alarm);
     RUN_TEST(should_read_and_write_timer);
+    RUN_TEST(should_fail_alarm_read);
     RUN_TEST(should_return_error_for_invalid_ioctl);
     RUN_TEST(should_close);
     GREATEST_MAIN_END();
