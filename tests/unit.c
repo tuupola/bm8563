@@ -2,7 +2,7 @@
 
 MIT License
 
-Copyright (c) 2020-2021 Mika Tuupola
+Copyright (c) 2020-2025 Mika Tuupola
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -123,31 +123,105 @@ should_read_and_write_time(void)
 }
 
 TEST
-should_handle_century(void)
+should_handle_year_1900(void)
 {
     struct tm datetime = {0};
     struct tm datetime2 = {0};
-    char buffer[128];
     bm8563_t bm;
     bm.read = &mock_i2c_read;
     bm.write = &mock_i2c_write;
 
-    datetime.tm_sec = 20;
-    datetime.tm_min = 15;
-    datetime.tm_hour = 23;
-    datetime.tm_mday = 24;
+    datetime.tm_sec = 0;
+    datetime.tm_min = 0;
+    datetime.tm_hour = 0;
+    datetime.tm_mday = 1;
     /* Months since January. */
-    datetime.tm_mon = 12 - 1;
-    /* Years since 1900. */
-    datetime.tm_year = 2006 - 1900;
+    datetime.tm_mon = 0;
+    /* Years since 1900, no century bit. */
+    datetime.tm_year = 1900 - 1900;
 
     ASSERT(BM8563_OK == bm8563_init(&bm));
     ASSERT(BM8563_OK == bm8563_write(&bm, &datetime));
-
     ASSERT(BM8563_OK == bm8563_read(&bm, &datetime2));
 
-    strftime(buffer, 128, "%c (day %j)", &datetime2);
-    ASSERT_STR_EQ("Sun Dec 24 23:15:20 2006 (day 358)", &buffer);
+    ASSERT_EQ(datetime.tm_year, datetime2.tm_year);
+    PASS();
+}
+
+TEST
+should_handle_year_1999(void)
+{
+    struct tm datetime = {0};
+    struct tm datetime2 = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    datetime.tm_sec = 59;
+    datetime.tm_min = 59;
+    datetime.tm_hour = 23;
+    datetime.tm_mday = 31;
+    /* Months since January. */
+    datetime.tm_mon = 11;
+    /* Years since 1900, no century bit. */
+    datetime.tm_year = 1999 - 1900;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_write(&bm, &datetime));
+    ASSERT(BM8563_OK == bm8563_read(&bm, &datetime2));
+
+    ASSERT_EQ(datetime.tm_year, datetime2.tm_year);
+    PASS();
+}
+
+TEST
+should_handle_year_2000(void)
+{
+    struct tm datetime = {0};
+    struct tm datetime2 = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    datetime.tm_sec = 0;
+    datetime.tm_min = 0;
+    datetime.tm_hour = 0;
+    datetime.tm_mday = 1;
+    /* Months since January. */
+    datetime.tm_mon = 0;
+    /* Years since 1900, century bit should be set. */
+    datetime.tm_year = 2000 - 1900;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_write(&bm, &datetime));
+    ASSERT(BM8563_OK == bm8563_read(&bm, &datetime2));
+
+    ASSERT_EQ(datetime.tm_year, datetime2.tm_year);
+    PASS();
+}
+
+TEST
+should_handle_year_2099(void)
+{
+    struct tm datetime = {0};
+    struct tm datetime2 = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    datetime.tm_sec = 59;
+    datetime.tm_min = 59;
+    datetime.tm_hour = 23;
+    datetime.tm_mday = 31;
+    datetime.tm_mon = 11;
+    /* Years since 1900, century bit should be set. */
+    datetime.tm_year = 2099 - 1900;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_write(&bm, &datetime));
+    ASSERT(BM8563_OK == bm8563_read(&bm, &datetime2));
+
+    ASSERT_EQ(datetime.tm_year, datetime2.tm_year);
     PASS();
 }
 
@@ -163,6 +237,31 @@ should_read_and_write_alarm(void)
 
     datetime.tm_min = 30;
     datetime.tm_hour = 21;
+    datetime.tm_mday = 15;
+    datetime.tm_wday = 3;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_SET, &datetime));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime2));
+    ASSERT_EQ(datetime.tm_min, datetime2.tm_min);
+    ASSERT_EQ(datetime.tm_hour, datetime2.tm_hour);
+    ASSERT_EQ(datetime.tm_mday, datetime2.tm_mday);
+    ASSERT_EQ(datetime.tm_wday, datetime2.tm_wday);
+
+    PASS();
+}
+
+TEST
+should_read_and_write_alarm_all_none(void)
+{
+    struct tm datetime = {0};
+    struct tm datetime2 = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    datetime.tm_min = BM8563_ALARM_NONE;
+    datetime.tm_hour = BM8563_ALARM_NONE;
     datetime.tm_mday = BM8563_ALARM_NONE;
     datetime.tm_wday = BM8563_ALARM_NONE;
 
@@ -173,6 +272,20 @@ should_read_and_write_alarm(void)
     ASSERT_EQ(datetime.tm_hour, datetime2.tm_hour);
     ASSERT_EQ(datetime.tm_mday, datetime2.tm_mday);
     ASSERT_EQ(datetime.tm_wday, datetime2.tm_wday);
+
+    PASS();
+}
+
+TEST
+should_fail_alarm_read(void)
+{
+    struct tm datetime = {0};
+    bm8563_t bm;
+    bm.read = &mock_failing_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT_FALSE(BM8563_OK == bm8563_ioctl(&bm, BM8563_ALARM_READ, &datetime));
 
     PASS();
 }
@@ -202,6 +315,125 @@ should_read_and_write_timer(void)
     PASS();
 }
 
+TEST
+should_return_error_for_invalid_ioctl(void)
+{
+    uint8_t dummy;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_ERROR_NOTTY == bm8563_ioctl(&bm, 0x9999, &dummy));
+
+    PASS();
+}
+
+TEST
+should_close(void)
+{
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_close(&bm));
+
+    PASS();
+}
+
+TEST
+should_fail_ioctl_read(void)
+{
+    uint8_t reg = 0;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+
+    /* Switch to failing I2C after init. */
+    bm.read = &mock_failing_i2c_read;
+    ASSERT_FALSE(BM8563_OK == bm8563_ioctl(&bm, BM8563_TIMER_READ, &reg));
+
+    PASS();
+}
+
+TEST
+should_fail_ioctl_write(void)
+{
+    uint8_t reg = BM8563_TIMER_ENABLE | BM8563_TIMER_1HZ;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+
+    /* Switch to failing I2C after init. */
+    bm.write = &mock_failing_i2c_write;
+    ASSERT_FALSE(BM8563_OK == bm8563_ioctl(&bm, BM8563_TIMER_WRITE, &reg));
+
+    PASS();
+}
+
+TEST
+should_fail_write_time(void)
+{
+    struct tm datetime = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    datetime.tm_sec = 30;
+    datetime.tm_min = 45;
+    datetime.tm_hour = 12;
+    datetime.tm_mday = 15;
+    datetime.tm_mon = 6;
+    datetime.tm_year = 2025 - 1900;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+
+    /* Switch to failing I2C after init. */
+    bm.write = &mock_failing_i2c_write;
+    ASSERT_FALSE(BM8563_OK == bm8563_write(&bm, &datetime));
+
+    PASS();
+}
+
+TEST
+should_read_and_write_control_status1(void)
+{
+    uint8_t reg = BM8563_STOP;
+    uint8_t reg2 = 0;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS1_WRITE, &reg));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS1_READ, &reg2));
+    ASSERT_EQ(reg, reg2);
+
+    PASS();
+}
+
+TEST
+should_read_and_write_control_status2(void)
+{
+    uint8_t reg = BM8563_TIE | BM8563_AIE;
+    uint8_t reg2 = 0;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS2_WRITE, &reg));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS2_READ, &reg2));
+    ASSERT_EQ(reg, reg2);
+
+    PASS();
+}
+
 GREATEST_MAIN_DEFS();
 
 int
@@ -215,9 +447,18 @@ main(int argc, char **argv)
     RUN_TEST(should_fail_read_time);
     RUN_TEST(should_get_low_voltage_warning);
     RUN_TEST(should_read_and_write_time);
-    RUN_TEST(should_handle_century);
+    RUN_TEST(should_handle_year_1999);
+    RUN_TEST(should_handle_year_2000);
+    RUN_TEST(should_handle_year_2099);
     RUN_TEST(should_read_and_write_alarm);
     RUN_TEST(should_read_and_write_timer);
-
+    RUN_TEST(should_fail_alarm_read);
+    RUN_TEST(should_return_error_for_invalid_ioctl);
+    RUN_TEST(should_close);
+    RUN_TEST(should_fail_ioctl_read);
+    RUN_TEST(should_fail_ioctl_write);
+    RUN_TEST(should_fail_write_time);
+    RUN_TEST(should_read_and_write_control_status1);
+    RUN_TEST(should_read_and_write_control_status2);
     GREATEST_MAIN_END();
 }
