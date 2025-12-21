@@ -342,6 +342,40 @@ should_close(void)
     PASS();
 }
 
+TEST
+should_read_and_write_control_status1(void)
+{
+    uint8_t reg = BM8563_STOP;
+    uint8_t reg2 = 0;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS1_WRITE, &reg));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS1_READ, &reg2));
+    ASSERT_EQ(reg, reg2);
+
+    PASS();
+}
+
+TEST
+should_read_and_write_control_status2(void)
+{
+    uint8_t reg = BM8563_TIE | BM8563_AIE;
+    uint8_t reg2 = 0;
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS2_WRITE, &reg));
+    ASSERT(BM8563_OK == bm8563_ioctl(&bm, BM8563_CONTROL_STATUS2_READ, &reg2));
+    ASSERT_EQ(reg, reg2);
+
+    PASS();
+}
+
 GREATEST_MAIN_DEFS();
 
 int
@@ -363,5 +397,7 @@ main(int argc, char **argv)
     RUN_TEST(should_fail_alarm_read);
     RUN_TEST(should_return_error_for_invalid_ioctl);
     RUN_TEST(should_close);
+    RUN_TEST(should_read_and_write_control_status1);
+    RUN_TEST(should_read_and_write_control_status2);
     GREATEST_MAIN_END();
 }
