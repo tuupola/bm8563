@@ -343,6 +343,30 @@ should_close(void)
 }
 
 TEST
+should_fail_write_time(void)
+{
+    struct tm datetime = {0};
+    bm8563_t bm;
+    bm.read = &mock_i2c_read;
+    bm.write = &mock_i2c_write;
+
+    datetime.tm_sec = 30;
+    datetime.tm_min = 45;
+    datetime.tm_hour = 12;
+    datetime.tm_mday = 15;
+    datetime.tm_mon = 6;
+    datetime.tm_year = 2025 - 1900;
+
+    ASSERT(BM8563_OK == bm8563_init(&bm));
+
+    /* Switch to failing I2C after init. */
+    bm.write = &mock_failing_i2c_write;
+    ASSERT_FALSE(BM8563_OK == bm8563_write(&bm, &datetime));
+
+    PASS();
+}
+
+TEST
 should_read_and_write_control_status1(void)
 {
     uint8_t reg = BM8563_STOP;
@@ -397,6 +421,7 @@ main(int argc, char **argv)
     RUN_TEST(should_fail_alarm_read);
     RUN_TEST(should_return_error_for_invalid_ioctl);
     RUN_TEST(should_close);
+    RUN_TEST(should_fail_write_time);
     RUN_TEST(should_read_and_write_control_status1);
     RUN_TEST(should_read_and_write_control_status2);
     GREATEST_MAIN_END();
